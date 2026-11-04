@@ -1,20 +1,42 @@
 # QUREO SOLVER
 
-واجهة ثابتة لموقع QUREO SOLVER.
+واجهة عربية ثابتة لموقع QUREO SOLVER، مرتبة لتعمل مباشرة على GitHub Pages.
 
-## التشغيل
+## ملفات المشروع
 
-الموقع منشور عبر GitHub Pages. الواجهة تتوقع API متوافقًا مع المسارات التالية:
+```text
+index.html                 الصفحة الرئيسية
+styles.css                 التنسيقات
+app.js                     منطق الخطوات والاتصال بالـ API
+.nojekyll                  منع معالجة Jekyll للملفات
+.github/workflows/pages.yml نشر الموقع عبر GitHub Actions
+```
+
+## تشغيل GitHub Pages
+
+1. افتح **Settings → Pages** في المستودع.
+2. اختر **Source: GitHub Actions**.
+3. ادفع أي تحديث إلى فرع `main` أو شغّل Workflow باسم **Deploy static site to GitHub Pages**.
+
+## خادم API
+
+GitHub Pages يستضيف الواجهة فقط ولا يشغّل خادم Python أو API. يجب توفير خادم يدعم:
 
 - `GET /api/progress?user=<user_key>`
 - `POST /api/solve`
 
-لتحديد عنوان خادم الـ API، افتح الموقع مع معامل `api`:
+بعد تشغيل خادم API، افتح الموقع مع عنوانه:
 
 ```text
-https://<username>.github.io/qureo-solver-site/?api=https://your-api.example.com
+https://mahamednagyteam-star.github.io/qureo-solver-site/?api=https://your-api.example.com
 ```
 
-أو خزّن العنوان في `localStorage` تحت المفتاح `qureoApiBase`.
+يجب أن يسمح خادم API بطلبات CORS من نطاق الموقع، وأن يعمل عبر HTTPS عند استخدام الموقع عبر HTTPS.
 
-> GitHub Pages يستضيف ملفات الواجهة فقط ولا يشغّل خادم Python أو API خلفي.
+## التطوير المحلي
+
+```bash
+python3 -m http.server 8765
+```
+
+ثم افتح `http://localhost:8765/`.
