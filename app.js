@@ -2,9 +2,11 @@
 // The website (443 HTTPS) proxies /api/* to it, so the browser only talks
 // same-origin HTTPS and there is no mixed-content block.
 // Default device URL below; override with ?api=https://... or localStorage.
-const API_BASE = new URLSearchParams(location.search).get('api')
+const API_BASE = (
+  new URLSearchParams(location.search).get('api')
   || localStorage.getItem('qureoApiBase')
-  || '';
+  || ''
+).trim().replace(/\/+$/, '');
 
 // admin mode: open the site once with ?admin=<ADMIN_KEY> and it sticks
 // (no 50-limit). ADMIN_KEY must match the server's ADMIN_KEY env.
@@ -71,6 +73,25 @@ if (!/^[a-f0-9]{16}$/.test(currentUser)) {
 function setStatus(message, type = '') {
   statusBox.textContent = message;
   statusBox.className = `status ${type}`;
+}
+
+function requestSignal(timeoutMs) {
+  if (typeof AbortSignal?.timeout === 'function') return AbortSignal.timeout(timeoutMs);
+  const controller = new AbortController();
+  window.setTimeout(() => controller.abort(), timeoutMs);
+  return controller.signal;
+}
+
+async function readJsonResponse(response) {
+  const text = await response.text();
+  let data = {};
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    data = { error: `رد غير صالح من الخادم (${response.status}).` };
+  }
+  if (!response.ok) throw new Error(data.error || `تعذر الاتصال بالخادم (${response.status}).`);
+  return data;
 }
 
 // ---- step wizard ----
@@ -174,7 +195,8 @@ function renderActivity(lines) {
   }
 
   const fragment = document.createDocumentFragment();
-  for (const text of lines) {
+  for (const rawText of lines) {
+    const text = String(rawText ?? '');
     const row = document.createElement('div');
     const lower = text.toLowerCase();
     row.className = 'activity-line';
@@ -204,17 +226,18 @@ function renderChapters(chapters) {
 
   const fragment = document.createDocumentFragment();
   for (const item of chapters) {
+    const lessons = Array.isArray(item?.lessons) ? item.lessons.map((lesson) => String(lesson)) : [];
     const card = document.createElement('div');
     card.className = 'chapter';
     const text = document.createElement('div');
     const title = document.createElement('strong');
     title.textContent = `Chapter ${item.chapter}`;
     const detail = document.createElement('small');
-    detail.textContent = item.lessons.join(' · ');
-    detail.title = item.lessons.join(' · ');
+    detail.textContent = lessons.join(' · ');
+    detail.title = lessons.join(' · ');
     text.append(title, detail);
     const count = document.createElement('span');
-    count.textContent = `${item.lessons.length} solved`;
+    count.textContent = `${lessons.length} solved`;
     card.append(text, count);
     fragment.appendChild(card);
   }
@@ -233,15 +256,18 @@ async function refreshProgress() {
     renderChapters([]);
     return;
   }
+  if (!API_BASE) {
+    setStatus('أضف رابط خادم API في الرابط باستخدام ?api=https://…', 'error');
+    return;
+  }
 
   refreshing = true;
   try {
     const response = await fetch(`${API_BASE}/api/progress?user=${encodeURIComponent(currentUser)}`, {
       cache: 'no-store',
-      signal: AbortSignal.timeout(15000),
+      signal: requestSignal(15000),
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'تعذر قراءة التقدم.');
+    const data = await readJsonResponse(response);
     if (progressFailures >= 10) setStatus('');
     progressFailures = 0;
     document.querySelector('#completed-count').textContent = data.completed_count;
@@ -264,8 +290,8 @@ async function refreshProgress() {
     renderChapters(Array.isArray(data.chapters) ? data.chapters : []);
   } catch (error) {
     progressFailures += 1;
-    if (progressFailures >= 10) {
-      setStatus('الاتصال بطيء — بنعيد المحاولة تلقائياً.', 'error');
+    if (progressFailures >= 3) {
+      setStatus('تعذر الاتصال بخادم API — بنعيد المحاولة تلقائياً.', 'error');
     }
   } finally {
     refreshing = false;
@@ -276,6 +302,7 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (!selectedCourse) return setStatus('ارجع للخطوة الأولى واختار الدورة.', 'error');
   if (!document.querySelector('#password').value) return setStatus('اكتب كلمة السر الأول.', 'error');
+  if (!API_BASE) return setStatus('لا يمكن البدء قبل إضافة رابط خادم API باستخدام ?api=https://…', 'error');
   button.disabled = true;
   setStatus('جارٍ بدء الحل…');
   const payload = {
@@ -292,10 +319,9 @@ form.addEventListener('submit', async (event) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(30000),
+      signal: requestSignal(30000),
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'تعذر بدء الحل.');
+    const data = await readJsonResponse(response);
     currentUser = data.user_key;
     localStorage.setItem('qureoUserKey', currentUser);
     activitySignature = '';
@@ -311,7 +337,8 @@ form.addEventListener('submit', async (event) => {
     }
     refreshProgress();
   } catch (error) {
-    setStatus(error.name === 'AbortError' ? 'السيرفر مشغول — حاول تاني بعد ثواني.' : error.message, 'error');
+    const timedOut = error?.name === 'AbortError' || error?.name === 'TimeoutError';
+    setStatus(timedOut ? 'السيرفر مشغول — حاول تاني بعد ثواني.' : (error.message || 'تعذر بدء الحل.'), 'error');
   } finally {
     button.disabled = false;
   }
