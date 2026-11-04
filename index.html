@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="#080910" name="theme-color"/>
+<title>QUREO SOLVER</title>
+<link href="styles.css?v=2" rel="stylesheet"/>
+</head>
+<body>
+<div class="ambient ambient-one"></div>
+<div class="ambient ambient-two"></div>
+<div class="noise"></div>
+<!-- انضم لتيليجرام -->
+<div aria-labelledby="join-title" aria-modal="true" class="modal" id="join-modal" role="dialog">
+<div class="modal-card">
+<div class="modal-icon">↗</div>
+<div class="eyebrow">خطوة واحدة قبل البدء</div>
+<h2 id="join-title">انضم إلى مجتمعنا</h2>
+<p>افتح قناة التيليجرام لمعرفة التحديثات أولاً بأول، ثم اضغط «لقد انضممت» للمتابعة.</p>
+<a class="whatsapp" href="https://t.me/PyToolsArab" rel="noopener" target="_blank">فتح قناة التيليجرام <span>↗</span></a>
+<button id="joined-button" type="button">لقد انضممت</button>
+</div>
+</div>
+<!-- اختيار السنة -->
+<div aria-labelledby="year-title" aria-modal="true" class="modal hidden" id="year-modal" role="dialog">
+<div class="modal-card">
+<div class="eyebrow">أهلاً بيك</div>
+<h2 id="year-title">انت اولي بكالوريا ولا تانية؟</h2>
+<p>اختار سنتك الدراسية عشان نظبطلك الاختيارات المناسبة.</p>
+<div class="year-buttons">
+<button class="year-btn" id="year-one" type="button">اولي بكالوريا</button>
+<button class="year-btn" id="year-two" type="button">تانية بكالوريا</button>
+</div>
+</div>
+</div>
+<main class="shell">
+<header class="topbar">
+<div aria-label="QUREO SOLVER" class="brand" dir="ltr">
+<span class="brand-mark">Q</span>
+<span class="brand-name">QUREO <strong>SOLVER</strong></span>
+</div>
+<a class="social-button" dir="ltr" href="https://t.me/PyToolsArab" rel="noopener" target="_blank">
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M21.9 3.5 2.9 10.8c-1 .4-1 1 0 1.3l4.9 1.6 1.9 5.7c.3.9 1.5 1 2 .2l2.7-3.4 4.9 3.6c.6.4 1.4.1 1.6-.7l3.3-14.3c.2-1-.5-1.6-1.4-1.3ZM8.2 13.1l9.8-6-7.3 8.2-.3 3.3-2.2-5.5Z"></path></svg>
+<span>Telegram</span><span class="external">↗</span>
+</a>
+</header>
+<section class="hero">
+<div class="hero-copy">
+<div class="eyebrow"><span class="eyebrow-line"></span> AUTOMATION, REFINED</div>
+<h1>تعلّم أقل تعقيدًا.<br/><span>تقدّم أسرع.</span></h1>
+<p>حل دروس كيريو بسرعة صاروخية ودقة كاملة، مع نشاط مباشر خاص بحسابك فقط. اختار سنتك، اختار الدورة، واكتب بياناتك.</p>
+<div class="hero-tags" dir="ltr"><span>QUREO courses</span><span>Ultra fast</span><span>Live progress</span></div>
+</div>
+<div aria-hidden="true" class="hero-visual">
+<div class="orbit orbit-one"></div>
+<div class="orbit orbit-two"></div>
+<div class="visual-core">Q<span>READY</span></div>
+</div>
+</section>
+<section class="layout">
+<div class="panel login-panel">
+<div class="panel-heading">
+<span class="step">01</span>
+<div><h2>ابدأ الحل</h2><p>خطوات بسيطة: الدورة، الرقم، الكود، الباسورد. والباقي علينا.</p></div>
+</div>
+<form id="solve-form">
+<!-- الخطوة 1: الدورة -->
+<div class="wizard-step active" data-step="1">
+<label>اختار الدورة</label>
+<div id="course-cards"></div>
+<p class="wizard-hint" id="course-desc">دوس على الدورة اللي عايز تحلها.</p>
+<a class="change-year" id="change-year">تغيير السنة الدراسية</a>
+</div>
+<!-- الخطوة 2: الرقم -->
+<div class="wizard-step" data-step="2">
+<label for="phone">رقم موبايلك؟</label>
+<input autocomplete="tel" id="phone" name="phone" placeholder="05xxxxxxxx" type="tel"/>
+<p class="wizard-hint">هنتواصل معاك لو احتجنا. رقمك وبياناتك آمنة معانا.</p>
+</div>
+<!-- الخطوة 3: الكود -->
+<div class="wizard-step" data-step="3">
+<label for="code">كود الطالب؟ اكتبه هنا</label>
+<input autocomplete="one-time-code" id="code" name="code" placeholder="أدخل الكود" type="text"/>
+<p class="wizard-hint">كود الطالب بتاع حساب كيريو.</p>
+</div>
+<!-- الخطوة 4: الباسورد -->
+<div class="wizard-step" data-step="4">
+<label for="password">كلمة السر؟ اكتبها هنا</label>
+<input autocomplete="current-password" id="password" name="password" placeholder="كلمة سر كيريو" type="password"/>
+<p class="wizard-hint">كلمة سر حساب كيريو. بياناتك بتتستخدم للحل بس.</p>
+</div>
+<div class="wizard-nav">
+<span class="step-indicator" id="step-indicator">الخطوة 1 من 4</span>
+<button class="btn-ghost" id="btn-back" style="display:none" type="button">رجوع</button>
+<button class="primary-button" id="btn-next" type="button"><span>التالي</span><span class="arrow">←</span></button>
+<button class="primary-button" disabled="" id="start-button" style="display:none" type="submit"><span>ابدأ الحل الآن</span><span class="arrow">←</span></button>
+</div>
+<p class="status" id="status" role="status">جاهز للبدء.</p>
+</form>
+<div class="privacy-note"><span>●</span> اتصال مباشر بهذا الخادم فقط</div>
+</div>
+<div class="panel progress-panel">
+<div class="panel-heading progress-heading">
+<span class="step">02</span>
+<div><h2>مركز التقدم</h2><p>تحديثات لحظية من الجلسة التي بدأتها أنت.</p></div>
+<span class="running-badge" id="running-badge">متوقف</span>
+</div>
+<div class="stats">
+<div class="stat"><strong id="completed-count">0</strong><span>دروس مكتملة</span></div>
+<div class="stat"><strong id="last-chapter">—</strong><span>آخر فصل</span></div>
+<div class="stat"><strong id="running">متوقف</strong><span>حالة الحل</span></div>
+</div>
+<div class="activity-section">
+<div class="section-title"><h3><span class="live-dot"></span> النشاط المباشر</h3><span id="activity-count">0 أحداث</span></div>
+<div aria-live="polite" class="activity" id="activity">
+<div class="empty compact">سيظهر نشاط حسابك هنا عند بدء الحل.</div>
+</div>
+</div>
+<div class="chapters-section">
+<div class="section-title"><h3>الفصول</h3><span>حسابك فقط</span></div>
+<div class="chapters" id="chapters">
+<div class="empty">لا يوجد تقدم لهذا الحساب بعد.</div>
+</div>
+</div>
+</div>
+</section>
+<footer><span>QUREO SOLVER</span> · صُنع لمتعلمي كيريو</footer>
+</main>
+<script src="app.js?v=9"></script>
+</body>
+</html>
