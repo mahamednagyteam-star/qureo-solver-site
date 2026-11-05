@@ -338,7 +338,13 @@ form.addEventListener('submit', async (event) => {
     refreshProgress();
   } catch (error) {
     const timedOut = error?.name === 'AbortError' || error?.name === 'TimeoutError';
-    setStatus(timedOut ? 'السيرفر مشغول — حاول تاني بعد ثواني.' : (error.message || 'تعذر بدء الحل.'), 'error');
+    const networkError = error instanceof TypeError;
+    const message = timedOut
+      ? 'انتهت مهلة الاتصال. تحقق من حالة خادم API وحاول لاحقاً.'
+      : networkError
+        ? 'تعذر الوصول إلى خادم API. تحقق من عنوانه، وأنه يعمل عبر HTTPS، وأن CORS يسمح بنطاق الموقع.'
+        : (error?.message || 'تعذر إكمال الطلب. راجع سجل الخادم لمعرفة السبب.');
+    setStatus(message, 'error');
   } finally {
     button.disabled = false;
   }
