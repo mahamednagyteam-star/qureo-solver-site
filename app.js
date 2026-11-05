@@ -5,7 +5,7 @@
 const API_BASE = (
   new URLSearchParams(location.search).get('api')
   || localStorage.getItem('qureoApiBase')
-  || ''
+  || 'https://qureosolver.xyz'
 ).trim().replace(/\/+$/, '');
 
 // admin mode: open the site once with ?admin=<ADMIN_KEY> and it sticks
