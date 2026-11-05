@@ -196,3 +196,39 @@ footer span { color: #9698aa; font-weight: 700; letter-spacing: .1em; }
 }
 #join-modal { z-index: 21; }
 #year-modal { z-index: 20; }
+
+
+/* ---- visual refinement + accessibility ---- */
+:root { --surface-hover: rgba(255,255,255,.065); }
+::selection { color: #fff; background: rgba(155,123,255,.42); }
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+.course-card, .stat, .chapter, .activity {
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+.chapter:hover { border-color: rgba(155,123,255,.22); background: var(--surface-hover); }
+.stat:hover { border-color: rgba(155,123,255,.25); background: var(--surface-hover); }
+.status.error {
+  padding: 10px 12px;
+  border: 1px solid rgba(255,145,166,.2);
+  border-radius: 10px;
+  background: rgba(255,91,124,.055);
+}
+.status.success {
+  padding: 10px 12px;
+  border: 1px solid rgba(117,228,173,.17);
+  border-radius: 10px;
+  background: rgba(117,228,173,.045);
+}
+.panel { transition: border-color .25s ease, box-shadow .25s ease; }
+.panel:hover { border-color: rgba(155,123,255,.18); }
+button, .course-card, .social-button, .year-btn { -webkit-tap-highlight-color: transparent; }
+@media (max-width: 520px) {
+  .hero p { font-size: 13px; }
+  .panel { padding: 17px; }
+  .panel-heading { gap: 10px; }
+  .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .stat strong { font-size: 17px; }
+}
